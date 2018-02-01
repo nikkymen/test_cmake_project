@@ -44,3 +44,4 @@ script:
     # Go to release build
     cd Build-Release
     make -j 2
+    ./test_unittest
