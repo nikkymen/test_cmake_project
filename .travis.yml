@@ -16,7 +16,7 @@ matrix:
       addons:
         apt:
           sources: *all_sources
-          packages: ['valgrind', 'lcov', 'g++-4.9']
+          packages: ['valgrind', 'lcov', 'g++-4.9', libopencv-dev]
       env: C_COMPILER='gcc-4.9' CXX_COMPILER='g++-4.9' VALGRIND=1
 
     - os: linux

@@ -12,6 +12,8 @@ set(SOURCES
 
 add_library(${PROJECT_NAME} ${SOURCES})
 
+find_package(OpenCV)
+
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS -std=gnu++11)
 
 #########
