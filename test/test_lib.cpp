@@ -13,5 +13,5 @@ TEST_CASE( "test_2" )
 {
     std::string result = test::test_function();
 
-    REQUIRE( result == "hello world 2" );
+    REQUIRE( result == "hello world" );
 }
