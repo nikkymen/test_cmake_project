@@ -17,7 +17,7 @@ matrix:
         apt:
           sources: *all_sources
           packages: ['valgrind', 'lcov', 'g++-4.9']
-      env: COMPILER='g++-4.9' VALGRIND=1
+      env: C_COMPILER='gcc-4.9' CXX_COMPILER='g++-4.9' VALGRIND=1
 
     - os: linux
       compiler: gcc
@@ -25,7 +25,7 @@ matrix:
         apt:
           sources: *all_sources
           packages: ['valgrind', 'lcov', 'g++-7']
-      env: COMPILER='g++-7' VALGRIND=1
+      env: C_COMPILER='gcc-7' CXX_COMPILER='g++-7' VALGRIND=1
 
 install:
   - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
@@ -40,9 +40,8 @@ install:
     fi
 
 before_script:
-  - export C=${COMPILER}
-  - export CC=${COMPILER}
-  - export CXX=${COMPILER}
+  - export CC=${C_COMPILER}
+  - export CXX=${CXX_COMPILER}
   - cd ${TRAVIS_BUILD_DIR}
   - |
     # Don't bother with release build for coverage build
@@ -53,5 +52,5 @@ script:
   - |
     # Go to release build
     cd Build-Release
-    make -j 2
+    make -j 8
     ./test_unittest
