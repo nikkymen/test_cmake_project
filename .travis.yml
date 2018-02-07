@@ -20,12 +20,13 @@ install:
     add-apt-repository -y ppa:ubuntu-toolchain-r/test;
     apt-get update;
     apt-get install -y software-properties-common python-software-properties;
-    apt-get install -y build-essential cmake libboost-thread-dev libboost-date-time-dev; opencv-dev
+    apt-get install -y build-essential cmake libboost-thread-dev libboost-date-time-dev opencv-dev;
 
     apt-get install -y gcc-$CC_VER g++-$CC_VER"
 
 script:
-  - docker exec -t ubuntu-test bash -c "lsb_release -a; cd /travis;
+  - docker exec -t ubuntu-test bash -c "lsb_release -a; 
+    cd /travis;
     cmake -DCMAKE_C_COMPILER=gcc-$CC_VER -DCMAKE_CXX_COMPILER=g++-$CC_VER . &&
     make && ./test_unittest"
 
