@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(test)
+project(test_lib)
 
 include_directories(.)
 include_directories(third_party)
