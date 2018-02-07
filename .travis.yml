@@ -24,7 +24,7 @@ install:
     apt-get install -y gcc-$CC_VER g++-$CC_VER"
 
 script:
-  - docker exec -t ubuntu-test bash -c "cd /travis;
+  - docker exec -t ubuntu-test bash -c "lsb_release -a; cd /travis;
     cmake -DCMAKE_C_COMPILER=gcc-$CC_VER -DCMAKE_CXX_COMPILER=g++-$CC_VER . &&
     make && ./test_unittest"
 
