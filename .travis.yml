@@ -1,56 +1,32 @@
+sudo: required
+
+services:
+  - docker
+
+# It is not really needed, other than for showing correct language tag in Travis CI build log.
 language: cpp
-sudo: false
 
-common_sources: &all_sources
-  - ubuntu-toolchain-r-test
-  - llvm-toolchain-trusty
-  - llvm-toolchain-trusty-3.9
-  - llvm-toolchain-trusty-4.0
-  - llvm-toolchain-trusty-5.0
+env:
+  matrix:
+    - CC_VER: "5"
+    - CC_VER: "6"
 
-matrix:
-  include:
-
-    - os: linux
-      compiler: gcc
-      addons:
-        apt:
-          sources: *all_sources
-          packages: ['valgrind', 'lcov', 'g++-4.9', libopencv-dev]
-      env: C_COMPILER='gcc-4.9' CXX_COMPILER='g++-4.9' VALGRIND=1
-
-    - os: linux
-      compiler: gcc
-      addons: &gcc7
-        apt:
-          sources: *all_sources
-          packages: ['valgrind', 'lcov', 'g++-7']
-      env: C_COMPILER='gcc-7' CXX_COMPILER='g++-7' VALGRIND=1
+before_install:
+  - docker run -d --name ubuntu-test -v $(pwd):/travis ubuntu:latest tail -f /dev/null
+  - docker ps
 
 install:
-  - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
-  - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
-  - |
-    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
-      CMAKE_URL="http://www.cmake.org/files/v3.3/cmake-3.3.2-Linux-x86_64.tar.gz"
-      mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
-      export PATH=${DEPS_DIR}/cmake/bin:${PATH}
-    elif [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
-        which cmake || brew install cmake;
-    fi
-
-before_script:
-  - export CC=${C_COMPILER}
-  - export CXX=${CXX_COMPILER}
-  - cd ${TRAVIS_BUILD_DIR}
-  - |
-    # Don't bother with release build for coverage build
-    cmake -H. -BBuild-Release -DCMAKE_BUILD_TYPE=Release -Wdev -DUSE_CPP14=${CPP14}
-
+  - docker exec -t ubuntu-test bash -c "apt-get update;
+    apt-get install -y software-properties-common python-software-properties;
+    apt-get install -y build-essential cmake libboost-thread-dev libboost-date-time-dev;
+    add-apt-repository -y ppa:ubuntu-toolchain-r/test;
+    apt-get update;
+    apt-get install -y gcc-$CC_VER g++-$CC_VER"
 
 script:
-  - |
-    # Go to release build
-    cd Build-Release
-    make -j 8
-    ./test_unittest
+  - docker exec -t ubuntu-test bash -c "cd /travis;
+    cmake -DCMAKE_C_COMPILER=gcc-$CC_VER -DCMAKE_CXX_COMPILER=g++-$CC_VER . &&
+    make && ./test_unittest"
+
+notifications:
+    email: false
